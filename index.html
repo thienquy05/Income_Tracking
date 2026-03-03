@@ -102,7 +102,6 @@
     .summary-card .s-val{font-family:'DM Serif Display',serif;font-size:26px;color:var(--accent);line-height:1}
     .summary-card .s-sub{font-size:10px;color:var(--text-muted);margin-top:4px}
 
-    #submit-frame{display:none}
   </style>
 </head>
 <body>
@@ -173,7 +172,6 @@
 
 </div>
 
-<iframe id="submit-frame" name="submit-frame"></iframe>
 
 <!-- Xác nhận xoá -->
 <div class="confirm-overlay" id="confirm-overlay" onclick="cancelDelete(event)">
@@ -190,7 +188,7 @@
 <div class="toast" id="toast"><div class="toast-dot"></div><span id="toast-msg"></span></div>
 
 <script>
-  const API      = 'https://script.google.com/macros/s/AKfycbwP2CFhoXHsM0XdTNsmfiMBKysTZI2SaL4OCYks-RUefmnMp1fSyoIVrqFmFbbKBrTFng/exec';
+  const API      = 'https://script.google.com/macros/s/AKfycbzJtAkzHLBo5EMr8JwB1CrBrOKaefeRp-AS-s17pyt0Q1l1wWLyu4ZYhqjUqsjF9T9jZA/exec';
   const CURRENCY = '$';
   /* ══════════════════════════════════ */
 
@@ -252,9 +250,8 @@
     buildSummary();
 
     if (API && !API.startsWith('YOUR_')) {
-      syncViaForm(entry);
-      await wait(1200);
-      toast('Đã lưu & đồng bộ Google Sheets ✓', 'success');
+      const ok = await syncToSheets(entry);
+      toast(ok ? 'Đã lưu & đồng bộ Google Sheets ✓' : 'Đã lưu cục bộ — không kết nối được Sheets', ok ? 'success' : 'error');
     } else {
       toast('Đã lưu cục bộ', 'success');
     }
@@ -263,23 +260,30 @@
     clearForm();
   }
 
-  function syncViaForm(entry) {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = API;
-    form.target = 'submit-frame';
-    const fields = { month: entry.month, income: entry.income, tax: entry.tax, net: entry.net, rate: entry.rate };
-    Object.entries(fields).forEach(([k, v]) => {
-      const input = document.createElement('input');
-      input.type = 'hidden'; input.name = k; input.value = v;
-      form.appendChild(input);
-    });
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-  }
+  // Sends as URL-encoded form body — works reliably from GitHub Pages (HTTPS)
+  async function syncToSheets(entry) {
+    try {
+      const body = new URLSearchParams({
+        month:  entry.month,
+        income: entry.income,
+        tax:    entry.tax,
+        net:    entry.net,
+        rate:   entry.rate
+      }).toString();
 
-  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+      await fetch(API, {
+        method:  'POST',
+        mode:    'no-cors', // required — Apps Script doesn't return CORS headers
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:    body
+      });
+      // no-cors means response is opaque — if fetch didn't throw, data was sent
+      return true;
+    } catch (e) {
+      console.error('Sync error:', e);
+      return false;
+    }
+  }
 
   function setLoading(on) {
     document.getElementById('spinner').style.display = on ? 'block' : 'none';
