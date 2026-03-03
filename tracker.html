@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Quản Lý Thu Nhập & Thuế</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0d0f0e; --card:#141716; --accent:#b8f56a; --accent-dim:#8abf47;
+      --text:#e8ede9; --text-muted:#7a8c7d; --border:#2a312b;
+      --input-bg:#1a1e1b; --danger:#f56a6a; --success:#6af5a8; --radius:16px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+      background:radial-gradient(ellipse at 20% 0%,rgba(184,245,106,.07) 0%,transparent 60%),
+                 radial-gradient(ellipse at 80% 100%,rgba(106,245,168,.04) 0%,transparent 50%)}
+    .app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding-bottom:80px}
+
+    .header{padding:52px 24px 28px;border-bottom:1px solid var(--border)}
+    .header-label{font-size:10px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+    .header-title{font-family:'DM Serif Display',serif;font-size:32px;line-height:1.1}
+    .header-title em{font-style:italic;color:var(--accent)}
+    .header-sub{margin-top:10px;font-size:11px;color:var(--text-muted);line-height:1.6}
+
+    .tabs{display:flex;padding:0 24px;margin-top:24px;border-bottom:1px solid var(--border)}
+    .tab{flex:1;text-align:center;padding:12px 0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+    .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+    .panel{display:none;padding:28px 24px 0}
+    .panel.active{display:block}
+
+    .form-group{margin-bottom:20px}
+    .form-label{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+    .form-input{width:100%;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Mono',monospace;font-size:16px;padding:16px 18px;outline:none;appearance:none;-webkit-appearance:none;transition:border-color .2s,box-shadow .2s}
+    .form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(184,245,106,.1)}
+    .input-wrap{position:relative}
+    .input-prefix{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:16px;pointer-events:none}
+    .input-wrap .form-input{padding-left:32px}
+
+    .tax-preview{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px;display:none}
+    .tax-preview.visible{display:block}
+    .tax-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border)}
+    .tax-row:last-child{border-bottom:none}
+    .tax-row .label{color:var(--text-muted)}
+    .tax-row .value{color:var(--text);font-weight:500}
+    .tax-row.total .label{color:var(--text);font-size:13px}
+    .tax-row.total .value{color:var(--accent);font-size:14px}
+
+    .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:18px;border:none;border-radius:var(--radius);font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+    .btn-primary{background:var(--accent);color:#0d0f0e;font-weight:500}
+    .btn-primary:active{background:var(--accent-dim);transform:scale(.98)}
+    .btn-primary:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;transform:none}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-muted);margin-top:10px}
+    .btn-outline:active{border-color:var(--accent);color:var(--accent)}
+    .btn-danger{background:transparent;border:1px solid var(--danger);color:var(--danger);margin-top:10px}
+    .btn-danger:active{background:var(--danger);color:#fff}
+    .spinner{width:16px;height:16px;border:2px solid rgba(13,15,14,.3);border-top-color:#0d0f0e;border-radius:50%;animation:spin .7s linear infinite;display:none}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--border);border-radius:40px;padding:14px 24px;font-size:12px;letter-spacing:.05em;display:flex;align-items:center;gap:10px;z-index:999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast.success{border-color:var(--success)}
+    .toast.error{border-color:var(--danger)}
+    .toast-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .toast.success .toast-dot{background:var(--success)}
+    .toast.error .toast-dot{background:var(--danger)}
+
+    .records-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .records-title{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
+    .records-count{font-size:11px;color:var(--accent)}
+    .record-wrap{position:relative;margin-bottom:12px;overflow:hidden;border-radius:var(--radius)}
+    .record-delete-bg{position:absolute;inset:0;background:var(--danger);display:flex;align-items:center;justify-content:flex-end;padding-right:28px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#fff;font-weight:500;border-radius:var(--radius)}
+    .record-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:transform .25s ease;touch-action:pan-y;user-select:none;animation:slideIn .3s ease}
+    .record-card.swiping{transition:none}
+    @keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .record-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .record-date{font-size:10px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase}
+    .record-del-btn{background:none;border:none;color:var(--danger);font-size:20px;cursor:pointer;padding:0;line-height:1;opacity:.45}
+    .record-del-btn:active{opacity:1}
+    .record-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .record-item .label{font-size:10px;color:var(--text-muted);margin-bottom:4px}
+    .record-item .val{font-size:15px;color:var(--text)}
+    .record-item .val.accent{color:var(--accent)}
+    .empty-state{text-align:center;padding:60px 0;color:var(--text-muted);font-size:12px;line-height:2}
+    .empty-icon{font-size:36px;margin-bottom:12px;opacity:.4}
+
+    .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .2s}
+    .confirm-overlay.show{opacity:1;pointer-events:all}
+    .confirm-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;width:100%;max-width:440px;transform:translateY(20px);transition:transform .25s ease}
+    .confirm-overlay.show .confirm-box{transform:translateY(0)}
+    .confirm-title{font-size:14px;color:var(--text);margin-bottom:6px}
+    .confirm-sub{font-size:12px;color:var(--text-muted);margin-bottom:20px;line-height:1.6}
+    .confirm-actions{display:flex;gap:10px}
+    .confirm-actions .btn{flex:1;padding:14px;margin:0}
+
+    .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .summary-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px}
+    .summary-card.full{grid-column:1/-1}
+    .summary-card .s-label{font-size:10px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+    .summary-card .s-val{font-family:'DM Serif Display',serif;font-size:26px;color:var(--accent);line-height:1}
+    .summary-card .s-sub{font-size:10px;color:var(--text-muted);margin-top:4px}
+
+    #submit-frame{display:none}
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <header class="header">
+    <div class="header-label">Tài Chính Cá Nhân</div>
+    <h1 class="header-title">Thu Nhập &<br><em>Quản Lý Thuế</em></h1>
+    <p class="header-sub">Ghi chép · Đồng bộ Google Sheets</p>
+  </header>
+
+  <nav class="tabs">
+    <div class="tab active" onclick="switchTab('log')">Ghi</div>
+    <div class="tab"        onclick="switchTab('records')">Lịch Sử</div>
+    <div class="tab"        onclick="switchTab('summary')">Tổng Kết</div>
+  </nav>
+
+  <!-- GHI CHÉP -->
+  <section class="panel active" id="panel-log">
+    <div class="form-group">
+      <label class="form-label">Tháng / Năm</label>
+      <input type="month" class="form-input" id="input-month" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Thu Nhập</label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" class="form-input" id="input-income" placeholder="0.00" step="0.01" min="0" inputmode="decimal" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Thuế Đã Nộp</label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" class="form-input" id="input-tax" placeholder="0.00" step="0.01" min="0" inputmode="decimal" />
+      </div>
+    </div>
+    <div class="tax-preview" id="tax-preview">
+      <div class="tax-row"><span class="label">Thu Nhập Gộp</span><span class="value" id="prev-income">—</span></div>
+      <div class="tax-row"><span class="label">Thuế Đã Nộp</span><span class="value" id="prev-tax">—</span></div>
+      <div class="tax-row"><span class="label">Tỷ Lệ Thuế</span><span class="value" id="prev-rate">—</span></div>
+      <div class="tax-row total"><span class="label">Thu Nhập Thực</span><span class="value" id="prev-net">—</span></div>
+    </div>
+    <button class="btn btn-primary" id="submit-btn" onclick="submitEntry()">
+      <div class="spinner" id="spinner"></div>
+      <span id="btn-text">Lưu</span>
+    </button>
+    <button class="btn btn-outline" onclick="clearForm()">Xoá Trắng</button>
+  </section>
+
+  <!-- LỊCH SỬ -->
+  <section class="panel" id="panel-records">
+    <div class="records-header">
+      <span class="records-title">Tất Cả Giao Dịch</span>
+      <span class="records-count" id="records-count">0 giao dịch</span>
+    </div>
+    <div id="records-list">
+      <div class="empty-state"><div class="empty-icon">📋</div>Chưa có dữ liệu.<br>Hãy ghi chép giao dịch đầu tiên.</div>
+    </div>
+  </section>
+
+  <!-- TỔNG KẾT -->
+  <section class="panel" id="panel-summary">
+    <div class="summary-grid" id="summary-grid">
+      <div class="summary-card full"><div class="s-label">Chưa có dữ liệu</div><div class="s-val" style="font-size:18px;color:var(--text-muted)">Bắt đầu ghi chép</div></div>
+    </div>
+  </section>
+
+</div>
+
+<iframe id="submit-frame" name="submit-frame"></iframe>
+
+<!-- Xác nhận xoá -->
+<div class="confirm-overlay" id="confirm-overlay" onclick="cancelDelete(event)">
+  <div class="confirm-box">
+    <div class="confirm-title">Xoá giao dịch này?</div>
+    <div class="confirm-sub" id="confirm-sub"></div>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" onclick="cancelDelete()">Huỷ</button>
+      <button class="btn btn-danger"  onclick="confirmDelete()">Xoá</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toast-msg"></span></div>
+
+<script>
+  const API      = 'https://script.google.com/macros/s/AKfycbwP2CFhoXHsM0XdTNsmfiMBKysTZI2SaL4OCYks-RUefmnMp1fSyoIVrqFmFbbKBrTFng/exec';
+  const CURRENCY = '$';
+  /* ══════════════════════════════════ */
+
+  let localRecords       = [];
+  let pendingDeleteIndex = null;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setDefaultMonth();
+    document.getElementById('input-income').addEventListener('input', updatePreview);
+    document.getElementById('input-tax').addEventListener('input', updatePreview);
+    loadRecordsFromLocal();
+    buildSummary();
+  });
+
+  function fmt(n)  { return Number(n).toLocaleString('vi-VN', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+  function fmtK(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : fmt(n); }
+  function formatMonth(str) {
+    if (!str) return '—';
+    const [y,m] = str.split('-');
+    return `Tháng ${parseInt(m)}, ${y}`;
+  }
+
+  function setDefaultMonth() {
+    const now = new Date();
+    document.getElementById('input-month').value =
+      `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  }
+
+  function updatePreview() {
+    const income = parseFloat(document.getElementById('input-income').value) || 0;
+    const tax    = parseFloat(document.getElementById('input-tax').value)    || 0;
+    if (income > 0) {
+      document.getElementById('prev-income').textContent = CURRENCY + fmt(income);
+      document.getElementById('prev-tax').textContent    = CURRENCY + fmt(tax);
+      document.getElementById('prev-rate').textContent   = ((tax/income)*100).toFixed(1) + '%';
+      document.getElementById('prev-net').textContent    = CURRENCY + fmt(income - tax);
+      document.getElementById('tax-preview').classList.add('visible');
+    } else {
+      document.getElementById('tax-preview').classList.remove('visible');
+    }
+  }
+
+  async function submitEntry() {
+    const month  = document.getElementById('input-month').value;
+    const income = parseFloat(document.getElementById('input-income').value);
+    const tax    = parseFloat(document.getElementById('input-tax').value);
+
+    if (!month)                 { toast('Vui lòng chọn tháng',          'error'); return; }
+    if (!income || income <= 0) { toast('Nhập thu nhập hợp lệ',         'error'); return; }
+    if (isNaN(tax) || tax < 0) { toast('Nhập số tiền thuế hợp lệ',     'error'); return; }
+
+    const net   = parseFloat((income - tax).toFixed(2));
+    const rate  = parseFloat(((tax/income)*100).toFixed(2));
+    const entry = { month, income, tax, net, rate };
+
+    setLoading(true);
+    localRecords.unshift(entry);
+    saveLocal();
+    buildSummary();
+
+    if (API && !API.startsWith('YOUR_')) {
+      syncViaForm(entry);
+      await wait(1200);
+      toast('Đã lưu & đồng bộ Google Sheets ✓', 'success');
+    } else {
+      toast('Đã lưu cục bộ', 'success');
+    }
+
+    setLoading(false);
+    clearForm();
+  }
+
+  function syncViaForm(entry) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = API;
+    form.target = 'submit-frame';
+    const fields = { month: entry.month, income: entry.income, tax: entry.tax, net: entry.net, rate: entry.rate };
+    Object.entries(fields).forEach(([k, v]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden'; input.name = k; input.value = v;
+      form.appendChild(input);
+    });
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+  }
+
+  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function setLoading(on) {
+    document.getElementById('spinner').style.display = on ? 'block' : 'none';
+    document.getElementById('btn-text').textContent  = on ? 'Đang lưu…' : 'Lưu';
+    document.getElementById('submit-btn').disabled   = on;
+  }
+
+  function clearForm() {
+    document.getElementById('input-income').value = '';
+    document.getElementById('input-tax').value    = '';
+    document.getElementById('tax-preview').classList.remove('visible');
+    setDefaultMonth();
+  }
+
+  function saveLocal() { localStorage.setItem('trkRecords', JSON.stringify(localRecords)); }
+  function loadRecordsFromLocal() {
+    try { localRecords = JSON.parse(localStorage.getItem('trkRecords') || '[]'); }
+    catch(e) { localRecords = []; }
+  }
+
+  function loadRecords() { renderRecords(localRecords); }
+
+  function renderRecords(records) {
+    const list  = document.getElementById('records-list');
+    const count = records.length;
+    document.getElementById('records-count').textContent = count + ' giao dịch';
+
+    if (!count) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div>Chưa có dữ liệu.<br>Hãy ghi chép giao dịch đầu tiên.</div>`;
+      return;
+    }
+
+    list.innerHTML = records.map((r, i) => `
+      <div class="record-wrap" id="wrap-${i}">
+        <div class="record-delete-bg">Xoá ✕</div>
+        <div class="record-card" id="card-${i}"
+             ontouchstart="swipeStart(event,${i})"
+             ontouchmove="swipeMove(event,${i})"
+             ontouchend="swipeEnd(event,${i})">
+          <div class="record-header">
+            <div class="record-date">${formatMonth(r.month)}</div>
+            <button class="record-del-btn" onclick="askDelete(${i})">✕</button>
+          </div>
+          <div class="record-grid">
+            <div class="record-item"><div class="label">Thu Nhập</div><div class="val">${CURRENCY}${fmt(r.income)}</div></div>
+            <div class="record-item"><div class="label">Thuế Nộp</div><div class="val">${CURRENCY}${fmt(r.tax)}</div></div>
+            <div class="record-item"><div class="label">Thu Nhập Thực</div><div class="val accent">${CURRENCY}${fmt(r.net)}</div></div>
+            <div class="record-item"><div class="label">Tỷ Lệ Thuế</div><div class="val">${parseFloat(r.rate).toFixed(1)}%</div></div>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  let swipeStartX = 0;
+  function swipeStart(e, i) {
+    swipeStartX = e.touches[0].clientX;
+    document.getElementById(`card-${i}`).classList.add('swiping');
+  }
+  function swipeMove(e, i) {
+    const dx = e.touches[0].clientX - swipeStartX;
+    if (dx < 0) document.getElementById(`card-${i}`).style.transform = `translateX(${Math.max(dx,-120)}px)`;
+  }
+  function swipeEnd(e, i) {
+    const card = document.getElementById(`card-${i}`);
+    card.classList.remove('swiping');
+    if (e.changedTouches[0].clientX - swipeStartX < -80) askDelete(i);
+    card.style.transform = '';
+  }
+
+  function askDelete(index) {
+    pendingDeleteIndex = index;
+    const r = localRecords[index];
+    document.getElementById('confirm-sub').textContent =
+      `${formatMonth(r.month)} — Thu nhập: ${CURRENCY}${fmt(r.income)}, Thuế: ${CURRENCY}${fmt(r.tax)}. Chỉ xoá cục bộ; cần xoá thủ công trên Google Sheets nếu đã đồng bộ.`;
+    document.getElementById('confirm-overlay').classList.add('show');
+  }
+
+  function cancelDelete(e) {
+    if (e && e.target !== document.getElementById('confirm-overlay')) return;
+    document.getElementById('confirm-overlay').classList.remove('show');
+    pendingDeleteIndex = null;
+  }
+
+  function confirmDelete() {
+    if (pendingDeleteIndex === null) return;
+    localRecords.splice(pendingDeleteIndex, 1);
+    saveLocal();
+    document.getElementById('confirm-overlay').classList.remove('show');
+    pendingDeleteIndex = null;
+    renderRecords(localRecords);
+    buildSummary();
+    toast('Đã xoá giao dịch', 'success');
+  }
+
+  function buildSummary() {
+    const grid = document.getElementById('summary-grid');
+    if (!localRecords.length) {
+      grid.innerHTML = `<div class="summary-card full"><div class="s-label">Chưa có dữ liệu</div><div class="s-val" style="font-size:18px;color:var(--text-muted)">Bắt đầu ghi chép</div></div>`;
+      return;
+    }
+    const totalIncome = localRecords.reduce((s,r) => s+r.income, 0);
+    const totalTax    = localRecords.reduce((s,r) => s+r.tax,    0);
+    const totalNet    = localRecords.reduce((s,r) => s+r.net,    0);
+    const avgRate     = ((totalTax/totalIncome)*100).toFixed(1);
+    const year        = new Date().getFullYear();
+    const ytdIncome   = localRecords.filter(r => r.month.startsWith(String(year))).reduce((s,r) => s+r.income, 0);
+
+    grid.innerHTML = `
+      <div class="summary-card full">
+        <div class="s-label">Tổng Thu Nhập Thực (tất cả)</div>
+        <div class="s-val">${CURRENCY}${fmt(totalNet)}</div>
+        <div class="s-sub">trong ${localRecords.length} tháng</div>
+      </div>
+      <div class="summary-card"><div class="s-label">Tổng Thu Gộp</div><div class="s-val" style="font-size:20px">${CURRENCY}${fmtK(totalIncome)}</div></div>
+      <div class="summary-card"><div class="s-label">Tổng Thuế</div><div class="s-val" style="font-size:20px;color:var(--danger)">${CURRENCY}${fmtK(totalTax)}</div></div>
+      <div class="summary-card"><div class="s-label">Tỷ Lệ TB</div><div class="s-val" style="font-size:22px">${avgRate}%</div></div>
+      <div class="summary-card"><div class="s-label">Thu Gộp ${year}</div><div class="s-val" style="font-size:20px">${CURRENCY}${fmtK(ytdIncome)}</div></div>`;
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', ['log','records','summary'][i] === name));
+    document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
+    document.getElementById(`panel-${name}`).classList.add('active');
+    if (name === 'records') loadRecords();
+    if (name === 'summary') buildSummary();
+  }
+
+  function toast(msg, type='success') {
+    const el = document.getElementById('toast');
+    el.className = `toast ${type}`;
+    document.getElementById('toast-msg').textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 3200);
+  }
+</script>
+</body>
+</html>
