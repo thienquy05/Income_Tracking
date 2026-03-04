@@ -9,7 +9,8 @@
     :root {
       --bg:#0d0f0e; --card:#141716; --accent:#b8f56a; --accent-dim:#8abf47;
       --text:#e8ede9; --text-muted:#7a8c7d; --border:#2a312b;
-      --input-bg:#1a1e1b; --danger:#f56a6a; --success:#6af5a8; --radius:16px;
+      --input-bg:#1a1e1b; --danger:#f56a6a; --success:#6af5a8;
+      --warn:#f5c26a; --radius:16px;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
@@ -25,7 +26,7 @@
     .header-sub{margin-top:10px;font-size:11px;color:var(--text-muted);line-height:1.6}
 
     .tabs{display:flex;padding:0 24px;margin-top:24px;border-bottom:1px solid var(--border)}
-    .tab{flex:1;text-align:center;padding:12px 0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+    .tab{flex:1;text-align:center;padding:12px 0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
     .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 
     .panel{display:none;padding:28px 24px 0}
@@ -33,20 +34,23 @@
 
     .form-group{margin-bottom:20px}
     .form-label{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+    .form-label small{color:var(--text-muted);font-size:9px;letter-spacing:.04em;text-transform:none;margin-left:6px;opacity:.7}
     .form-input{width:100%;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Mono',monospace;font-size:16px;padding:16px 18px;outline:none;appearance:none;-webkit-appearance:none;transition:border-color .2s,box-shadow .2s}
     .form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(184,245,106,.1)}
     .input-wrap{position:relative}
     .input-prefix{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:16px;pointer-events:none}
     .input-wrap .form-input{padding-left:32px}
 
-    .tax-preview{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px;display:none}
-    .tax-preview.visible{display:block}
-    .tax-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border)}
-    .tax-row:last-child{border-bottom:none}
-    .tax-row .label{color:var(--text-muted)}
-    .tax-row .value{color:var(--text);font-weight:500}
-    .tax-row.total .label{color:var(--text);font-size:13px}
-    .tax-row.total .value{color:var(--accent);font-size:14px}
+    /* Preview card */
+    .preview-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px;display:none}
+    .preview-card.visible{display:block}
+    .preview-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)}
+    .preview-row:last-child{border-bottom:none}
+    .preview-row .lbl{color:var(--text-muted)}
+    .preview-row .val{color:var(--text);font-weight:500}
+    .preview-row .val.warn{color:var(--warn)}
+    .preview-row .val.accent{color:var(--accent);font-size:14px}
+    .preview-divider{height:1px;background:var(--border);margin:4px 0}
 
     .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:18px;border:none;border-radius:var(--radius);font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s}
     .btn-primary{background:var(--accent);color:#0d0f0e;font-weight:500}
@@ -71,18 +75,20 @@
     .records-title{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
     .records-count{font-size:11px;color:var(--accent)}
     .record-wrap{position:relative;margin-bottom:12px;overflow:hidden;border-radius:var(--radius)}
-    .record-delete-bg{position:absolute;inset:0;background:var(--danger);display:flex;align-items:center;justify-content:flex-end;padding-right:28px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#fff;font-weight:500;border-radius:var(--radius)}
+    .record-delete-bg{position:absolute;inset:0;background:var(--danger);display:flex;align-items:center;justify-content:flex-end;padding-right:28px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#fff;font-weight:500}
     .record-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:transform .25s ease;touch-action:pan-y;user-select:none;animation:slideIn .3s ease}
     .record-card.swiping{transition:none}
     @keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-    .record-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .record-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
     .record-date{font-size:10px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase}
     .record-del-btn{background:none;border:none;color:var(--danger);font-size:20px;cursor:pointer;padding:0;line-height:1;opacity:.45}
     .record-del-btn:active{opacity:1}
-    .record-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .record-item .label{font-size:10px;color:var(--text-muted);margin-bottom:4px}
-    .record-item .val{font-size:15px;color:var(--text)}
+    .record-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .record-item .lbl{font-size:10px;color:var(--text-muted);margin-bottom:3px}
+    .record-item .val{font-size:14px;color:var(--text)}
     .record-item .val.accent{color:var(--accent)}
+    .record-item .val.warn{color:var(--warn)}
+    .record-rule{grid-column:1/-1;height:1px;background:var(--border);margin:4px 0}
     .empty-state{text-align:center;padding:60px 0;color:var(--text-muted);font-size:12px;line-height:2}
     .empty-icon{font-size:36px;margin-bottom:12px;opacity:.4}
 
@@ -99,9 +105,10 @@
     .summary-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px}
     .summary-card.full{grid-column:1/-1}
     .summary-card .s-label{font-size:10px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
-    .summary-card .s-val{font-family:'DM Serif Display',serif;font-size:26px;color:var(--accent);line-height:1}
-    .summary-card .s-sub{font-size:10px;color:var(--text-muted);margin-top:4px}
-
+    .summary-card .s-val{font-family:'DM Serif Display',serif;font-size:24px;color:var(--accent);line-height:1}
+    .summary-card .s-val.warn{color:var(--warn)}
+    .summary-card .s-val.danger{color:var(--danger)}
+    .summary-card .s-sub{font-size:10px;color:var(--text-muted);margin-top:5px}
   </style>
 </head>
 <body>
@@ -110,7 +117,7 @@
   <header class="header">
     <div class="header-label">Tài Chính Cá Nhân</div>
     <h1 class="header-title">Thu Nhập &<br><em>Quản Lý Thuế</em></h1>
-    <p class="header-sub">Ghi chép · Đồng bộ Google Sheets</p>
+    <p class="header-sub">Toledo, Ohio · Tự động tính thuế · Đồng bộ Google Sheets</p>
   </header>
 
   <nav class="tabs">
@@ -126,30 +133,38 @@
       <input type="month" class="form-input" id="input-month" />
     </div>
     <div class="form-group">
-      <label class="form-label">Thu Nhập</label>
+      <label class="form-label">Thu Nhập <small>lương cơ bản</small></label>
       <div class="input-wrap">
         <span class="input-prefix">$</span>
         <input type="number" class="form-input" id="input-income" placeholder="0.00" step="0.01" min="0" inputmode="decimal" />
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Thuế Đã Nộp</label>
+      <label class="form-label">Tips <small>tiền boa</small></label>
       <div class="input-wrap">
         <span class="input-prefix">$</span>
-        <input type="number" class="form-input" id="input-tax" placeholder="0.00" step="0.01" min="0" inputmode="decimal" />
+        <input type="number" class="form-input" id="input-tips" placeholder="0.00" step="0.01" min="0" inputmode="decimal" />
       </div>
     </div>
-    <div class="tax-preview" id="tax-preview">
-      <div class="tax-row"><span class="label">Thu Nhập Gộp</span><span class="value" id="prev-income">—</span></div>
-      <div class="tax-row"><span class="label">Thuế Đã Nộp</span><span class="value" id="prev-tax">—</span></div>
-      <div class="tax-row"><span class="label">Tỷ Lệ Thuế</span><span class="value" id="prev-rate">—</span></div>
-      <div class="tax-row total"><span class="label">Thu Nhập Thực</span><span class="value" id="prev-net">—</span></div>
+
+    <!-- Auto-calculated preview -->
+    <div class="preview-card" id="preview-card">
+      <div class="preview-row"><span class="lbl">Lương cơ bản</span><span class="val" id="p-income">—</span></div>
+      <div class="preview-row"><span class="lbl">Tips</span><span class="val" id="p-tips">—</span></div>
+      <div class="preview-row"><span class="lbl">Tổng thu nhập trước thuế</span><span class="val" id="p-gross">—</span></div>
+      <div class="preview-divider"></div>
+      <div class="preview-row"><span class="lbl">Thuế Toledo (2.5%)</span><span class="val warn" id="p-toledo">—</span></div>
+      <div class="preview-row"><span class="lbl">Thuế Ohio (theo bậc)</span><span class="val warn" id="p-ohio">—</span></div>
+      <div class="preview-row"><span class="lbl">Tổng thuế</span><span class="val warn" id="p-totaltax">—</span></div>
+      <div class="preview-divider"></div>
+      <div class="preview-row"><span class="lbl">Thu nhập thực nhận</span><span class="val accent" id="p-net">—</span></div>
     </div>
+
     <button class="btn btn-primary" id="submit-btn" onclick="submitEntry()">
       <div class="spinner" id="spinner"></div>
       <span id="btn-text">Lưu</span>
     </button>
-    <button class="btn btn-outline" onclick="clearForm()">Xoá Trắng</button>
+    <button class="btn btn-outline" onclick="clearForm()">Xoá</button>
   </section>
 
   <!-- LỊCH SỬ -->
@@ -172,8 +187,6 @@
 
 </div>
 
-
-<!-- Xác nhận xoá -->
 <div class="confirm-overlay" id="confirm-overlay" onclick="cancelDelete(event)">
   <div class="confirm-box">
     <div class="confirm-title">Xoá giao dịch này?</div>
@@ -188,9 +201,30 @@
 <div class="toast" id="toast"><div class="toast-dot"></div><span id="toast-msg"></span></div>
 
 <script>
-  const API      = 'https://script.google.com/macros/s/AKfycbzJtAkzHLBo5EMr8JwB1CrBrOKaefeRp-AS-s17pyt0Q1l1wWLyu4ZYhqjUqsjF9T9jZA/exec';
+  const API      = 'https://script.google.com/macros/s/AKfycbwdRqxGeM8aKcWgM-EuYmtsVmEP7QejvAgbEOuVu-_REZ3jxCJvwNz38Qf14oaWjc9o3w/exec';
   const CURRENCY = '$';
   /* ══════════════════════════════════ */
+
+  // ── Tax rates ──────────────────────────────────────────────────
+  // Toledo city income tax: flat 2.5%
+  const TOLEDO_RATE = 0.025;
+
+  // Ohio 2024 graduated income tax (annual brackets)
+  // Source: tax.ohio.gov
+  function calcOhioAnnual(annual) {
+    if (annual <= 26050)  return 0;
+    if (annual <= 100000) return (annual - 26050)   * 0.02765;
+    if (annual <= 115300) return 2044.48 + (annual - 100000) * 0.03226;
+    if (annual <= 154500) return 2537.61 + (annual - 115300) * 0.03688;
+    return                       4003.87 + (annual - 154500) * 0.03990;
+  }
+
+  function calcTaxes(gross) {
+    const toledo = parseFloat((gross * TOLEDO_RATE).toFixed(2));
+    const ohio   = parseFloat((calcOhioAnnual(gross * 12) / 12).toFixed(2));
+    return { toledo, ohio, totalTax: parseFloat((toledo + ohio).toFixed(2)) };
+  }
+  // ───────────────────────────────────────────────────────────────
 
   let localRecords       = [];
   let pendingDeleteIndex = null;
@@ -198,19 +232,18 @@
   window.addEventListener('DOMContentLoaded', () => {
     setDefaultMonth();
     document.getElementById('input-income').addEventListener('input', updatePreview);
-    document.getElementById('input-tax').addEventListener('input', updatePreview);
+    document.getElementById('input-tips').addEventListener('input', updatePreview);
     loadRecordsFromLocal();
     buildSummary();
   });
 
-  function fmt(n)  { return Number(n).toLocaleString('vi-VN', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+  function fmt(n)  { return Number(n).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
   function fmtK(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : fmt(n); }
   function formatMonth(str) {
     if (!str) return '—';
     const [y,m] = str.split('-');
     return `Tháng ${parseInt(m)}, ${y}`;
   }
-
   function setDefaultMonth() {
     const now = new Date();
     document.getElementById('input-month').value =
@@ -219,30 +252,37 @@
 
   function updatePreview() {
     const income = parseFloat(document.getElementById('input-income').value) || 0;
-    const tax    = parseFloat(document.getElementById('input-tax').value)    || 0;
-    if (income > 0) {
-      document.getElementById('prev-income').textContent = CURRENCY + fmt(income);
-      document.getElementById('prev-tax').textContent    = CURRENCY + fmt(tax);
-      document.getElementById('prev-rate').textContent   = ((tax/income)*100).toFixed(1) + '%';
-      document.getElementById('prev-net').textContent    = CURRENCY + fmt(income - tax);
-      document.getElementById('tax-preview').classList.add('visible');
+    const tips   = parseFloat(document.getElementById('input-tips').value)   || 0;
+    const gross  = income + tips;
+
+    if (gross > 0) {
+      const { toledo, ohio, totalTax } = calcTaxes(gross);
+      const net = parseFloat((gross - totalTax).toFixed(2));
+      document.getElementById('p-income').textContent   = CURRENCY + fmt(income);
+      document.getElementById('p-tips').textContent     = CURRENCY + fmt(tips);
+      document.getElementById('p-gross').textContent    = CURRENCY + fmt(gross);
+      document.getElementById('p-toledo').textContent   = CURRENCY + fmt(toledo);
+      document.getElementById('p-ohio').textContent     = CURRENCY + fmt(ohio);
+      document.getElementById('p-totaltax').textContent = CURRENCY + fmt(totalTax);
+      document.getElementById('p-net').textContent      = CURRENCY + fmt(net);
+      document.getElementById('preview-card').classList.add('visible');
     } else {
-      document.getElementById('tax-preview').classList.remove('visible');
+      document.getElementById('preview-card').classList.remove('visible');
     }
   }
 
   async function submitEntry() {
     const month  = document.getElementById('input-month').value;
-    const income = parseFloat(document.getElementById('input-income').value);
-    const tax    = parseFloat(document.getElementById('input-tax').value);
+    const income = parseFloat(document.getElementById('input-income').value) || 0;
+    const tips   = parseFloat(document.getElementById('input-tips').value)   || 0;
 
-    if (!month)                 { toast('Vui lòng chọn tháng',          'error'); return; }
-    if (!income || income <= 0) { toast('Nhập thu nhập hợp lệ',         'error'); return; }
-    if (isNaN(tax) || tax < 0) { toast('Nhập số tiền thuế hợp lệ',     'error'); return; }
+    if (!month)               { toast('Vui lòng chọn tháng',    'error'); return; }
+    if (income <= 0 && tips <= 0) { toast('Nhập thu nhập hoặc tips', 'error'); return; }
 
-    const net   = parseFloat((income - tax).toFixed(2));
-    const rate  = parseFloat(((tax/income)*100).toFixed(2));
-    const entry = { month, income, tax, net, rate };
+    const gross            = parseFloat((income + tips).toFixed(2));
+    const { toledo, ohio, totalTax } = calcTaxes(gross);
+    const net              = parseFloat((gross - totalTax).toFixed(2));
+    const entry            = { month, income, tips, gross, toledo, ohio, totalTax, net };
 
     setLoading(true);
     localRecords.unshift(entry);
@@ -251,7 +291,7 @@
 
     if (API && !API.startsWith('YOUR_')) {
       const ok = await syncToSheets(entry);
-      toast(ok ? 'Đã lưu & đồng bộ Google Sheets ✓' : 'Đã lưu cục bộ — không kết nối được Sheets', ok ? 'success' : 'error');
+      toast(ok ? 'Đã lưu & đồng bộ Google Sheets ✓' : 'Đã lưu cục bộ — lỗi kết nối Sheets', ok ? 'success' : 'error');
     } else {
       toast('Đã lưu cục bộ', 'success');
     }
@@ -260,29 +300,25 @@
     clearForm();
   }
 
-  // Sends as URL-encoded form body — works reliably from GitHub Pages (HTTPS)
   async function syncToSheets(entry) {
     try {
-      const body = new URLSearchParams({
-        month:  entry.month,
-        income: entry.income,
-        tax:    entry.tax,
-        net:    entry.net,
-        rate:   entry.rate
-      }).toString();
-
       await fetch(API, {
         method:  'POST',
-        mode:    'no-cors', // required — Apps Script doesn't return CORS headers
+        mode:    'no-cors',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body:    body
+        body:    new URLSearchParams({
+          month:    entry.month,
+          income:   entry.income,
+          tips:     entry.tips,
+          gross:    entry.gross,
+          toledo:   entry.toledo,
+          ohio:     entry.ohio,
+          totalTax: entry.totalTax,
+          net:      entry.net
+        }).toString()
       });
-      // no-cors means response is opaque — if fetch didn't throw, data was sent
       return true;
-    } catch (e) {
-      console.error('Sync error:', e);
-      return false;
-    }
+    } catch (e) { return false; }
   }
 
   function setLoading(on) {
@@ -293,8 +329,8 @@
 
   function clearForm() {
     document.getElementById('input-income').value = '';
-    document.getElementById('input-tax').value    = '';
-    document.getElementById('tax-preview').classList.remove('visible');
+    document.getElementById('input-tips').value   = '';
+    document.getElementById('preview-card').classList.remove('visible');
     setDefaultMonth();
   }
 
@@ -308,14 +344,11 @@
 
   function renderRecords(records) {
     const list  = document.getElementById('records-list');
-    const count = records.length;
-    document.getElementById('records-count').textContent = count + ' giao dịch';
-
-    if (!count) {
+    document.getElementById('records-count').textContent = records.length + ' giao dịch';
+    if (!records.length) {
       list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div>Chưa có dữ liệu.<br>Hãy ghi chép giao dịch đầu tiên.</div>`;
       return;
     }
-
     list.innerHTML = records.map((r, i) => `
       <div class="record-wrap" id="wrap-${i}">
         <div class="record-delete-bg">Xoá ✕</div>
@@ -328,45 +361,40 @@
             <button class="record-del-btn" onclick="askDelete(${i})">✕</button>
           </div>
           <div class="record-grid">
-            <div class="record-item"><div class="label">Thu Nhập</div><div class="val">${CURRENCY}${fmt(r.income)}</div></div>
-            <div class="record-item"><div class="label">Thuế Nộp</div><div class="val">${CURRENCY}${fmt(r.tax)}</div></div>
-            <div class="record-item"><div class="label">Thu Nhập Thực</div><div class="val accent">${CURRENCY}${fmt(r.net)}</div></div>
-            <div class="record-item"><div class="label">Tỷ Lệ Thuế</div><div class="val">${parseFloat(r.rate).toFixed(1)}%</div></div>
+            <div class="record-item"><div class="lbl">Lương</div><div class="val">${CURRENCY}${fmt(r.income)}</div></div>
+            <div class="record-item"><div class="lbl">Tips</div><div class="val">${CURRENCY}${fmt(r.tips||0)}</div></div>
+            <div class="record-item"><div class="lbl">Tổng Gộp</div><div class="val">${CURRENCY}${fmt(r.gross||r.income)}</div></div>
+            <div class="record-item"><div class="lbl">Thu Thực Nhận</div><div class="val accent">${CURRENCY}${fmt(r.net)}</div></div>
+            <div class="record-rule"></div>
+            <div class="record-item"><div class="lbl">Thuế Toledo</div><div class="val warn">${CURRENCY}${fmt(r.toledo||0)}</div></div>
+            <div class="record-item"><div class="lbl">Thuế Ohio</div><div class="val warn">${CURRENCY}${fmt(r.ohio||0)}</div></div>
           </div>
         </div>
       </div>`).join('');
   }
 
   let swipeStartX = 0;
-  function swipeStart(e, i) {
-    swipeStartX = e.touches[0].clientX;
-    document.getElementById(`card-${i}`).classList.add('swiping');
-  }
-  function swipeMove(e, i) {
-    const dx = e.touches[0].clientX - swipeStartX;
-    if (dx < 0) document.getElementById(`card-${i}`).style.transform = `translateX(${Math.max(dx,-120)}px)`;
-  }
-  function swipeEnd(e, i) {
-    const card = document.getElementById(`card-${i}`);
+  function swipeStart(e,i){ swipeStartX=e.touches[0].clientX; document.getElementById(`card-${i}`).classList.add('swiping'); }
+  function swipeMove(e,i){ const dx=e.touches[0].clientX-swipeStartX; if(dx<0) document.getElementById(`card-${i}`).style.transform=`translateX(${Math.max(dx,-120)}px)`; }
+  function swipeEnd(e,i){
+    const card=document.getElementById(`card-${i}`);
     card.classList.remove('swiping');
-    if (e.changedTouches[0].clientX - swipeStartX < -80) askDelete(i);
-    card.style.transform = '';
+    if(e.changedTouches[0].clientX-swipeStartX<-80) askDelete(i);
+    card.style.transform='';
   }
 
   function askDelete(index) {
     pendingDeleteIndex = index;
     const r = localRecords[index];
     document.getElementById('confirm-sub').textContent =
-      `${formatMonth(r.month)} — Thu nhập: ${CURRENCY}${fmt(r.income)}, Thuế: ${CURRENCY}${fmt(r.tax)}. Chỉ xoá cục bộ; cần xoá thủ công trên Google Sheets nếu đã đồng bộ.`;
+      `${formatMonth(r.month)} — Tổng gộp: ${CURRENCY}${fmt(r.gross||r.income)}, Thuế: ${CURRENCY}${fmt(r.totalTax||0)}. Chỉ xoá cục bộ; cần xoá thủ công trên Google Sheets nếu đã đồng bộ.`;
     document.getElementById('confirm-overlay').classList.add('show');
   }
-
   function cancelDelete(e) {
     if (e && e.target !== document.getElementById('confirm-overlay')) return;
     document.getElementById('confirm-overlay').classList.remove('show');
     pendingDeleteIndex = null;
   }
-
   function confirmDelete() {
     if (pendingDeleteIndex === null) return;
     localRecords.splice(pendingDeleteIndex, 1);
@@ -384,23 +412,44 @@
       grid.innerHTML = `<div class="summary-card full"><div class="s-label">Chưa có dữ liệu</div><div class="s-val" style="font-size:18px;color:var(--text-muted)">Bắt đầu ghi chép</div></div>`;
       return;
     }
-    const totalIncome = localRecords.reduce((s,r) => s+r.income, 0);
-    const totalTax    = localRecords.reduce((s,r) => s+r.tax,    0);
-    const totalNet    = localRecords.reduce((s,r) => s+r.net,    0);
-    const avgRate     = ((totalTax/totalIncome)*100).toFixed(1);
+    const totalGross  = localRecords.reduce((s,r) => s+(r.gross||r.income), 0);
+    const totalTips   = localRecords.reduce((s,r) => s+(r.tips||0), 0);
+    const totalToledo = localRecords.reduce((s,r) => s+(r.toledo||0), 0);
+    const totalOhio   = localRecords.reduce((s,r) => s+(r.ohio||0), 0);
+    const totalTax    = localRecords.reduce((s,r) => s+(r.totalTax||0), 0);
+    const totalNet    = localRecords.reduce((s,r) => s+r.net, 0);
     const year        = new Date().getFullYear();
-    const ytdIncome   = localRecords.filter(r => r.month.startsWith(String(year))).reduce((s,r) => s+r.income, 0);
+    const ytd         = localRecords.filter(r => r.month.startsWith(String(year)));
+    const ytdNet      = ytd.reduce((s,r) => s+r.net, 0);
+    const ytdTax      = ytd.reduce((s,r) => s+(r.totalTax||0), 0);
 
     grid.innerHTML = `
       <div class="summary-card full">
         <div class="s-label">Tổng Thu Nhập Thực (tất cả)</div>
         <div class="s-val">${CURRENCY}${fmt(totalNet)}</div>
-        <div class="s-sub">trong ${localRecords.length} tháng</div>
+        <div class="s-sub">${localRecords.length} tháng · Tổng gộp ${CURRENCY}${fmtK(totalGross)}</div>
       </div>
-      <div class="summary-card"><div class="s-label">Tổng Thu Gộp</div><div class="s-val" style="font-size:20px">${CURRENCY}${fmtK(totalIncome)}</div></div>
-      <div class="summary-card"><div class="s-label">Tổng Thuế</div><div class="s-val" style="font-size:20px;color:var(--danger)">${CURRENCY}${fmtK(totalTax)}</div></div>
-      <div class="summary-card"><div class="s-label">Tỷ Lệ TB</div><div class="s-val" style="font-size:22px">${avgRate}%</div></div>
-      <div class="summary-card"><div class="s-label">Thu Gộp ${year}</div><div class="s-val" style="font-size:20px">${CURRENCY}${fmtK(ytdIncome)}</div></div>`;
+      <div class="summary-card">
+        <div class="s-label">Tổng Tips</div>
+        <div class="s-val" style="font-size:20px">${CURRENCY}${fmtK(totalTips)}</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Tổng Thuế</div>
+        <div class="s-val danger" style="font-size:20px">${CURRENCY}${fmtK(totalTax)}</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Thuế Toledo</div>
+        <div class="s-val warn" style="font-size:20px">${CURRENCY}${fmtK(totalToledo)}</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Thuế Ohio</div>
+        <div class="s-val warn" style="font-size:20px">${CURRENCY}${fmtK(totalOhio)}</div>
+      </div>
+      <div class="summary-card full">
+        <div class="s-label">Năm ${year} — Thu Thực</div>
+        <div class="s-val">${CURRENCY}${fmt(ytdNet)}</div>
+        <div class="s-sub">Đã nộp thuế ${year}: ${CURRENCY}${fmtK(ytdTax)}</div>
+      </div>`;
   }
 
   function switchTab(name) {
