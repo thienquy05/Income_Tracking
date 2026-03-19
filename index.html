@@ -258,9 +258,9 @@
   function updatePreview() {
     const income = parseFloat(document.getElementById('input-income').value) || 0;
     const tips   = parseFloat(document.getElementById('input-tips').value)   || 0;
-    const gross  = income;
+    const gross  = parseFloat((income - tips).toFixed(2));
 
-    if (gross > 0) {
+    if (income > 0) {
       const { toledo, ohio, totalTax } = calcTaxes(gross);
       const net = parseFloat((gross - totalTax).toFixed(2));
       document.getElementById('p-income').textContent   = CURRENCY + fmt(income);
@@ -284,7 +284,7 @@
     if (!month)               { toast('Vui lòng chọn ngày',      'error'); return; }
     if (income <= 0 && tips <= 0) { toast('Nhập thu nhập hoặc tips', 'error'); return; }
 
-    const gross            = parseFloat((income).toFixed(2));
+    const gross            = parseFloat((income - tips).toFixed(2));
     const { toledo, ohio, totalTax } = calcTaxes(gross);
     const net              = parseFloat((gross - totalTax).toFixed(2));
     const entry            = { month, income, tips, gross, toledo, ohio, totalTax, net };
